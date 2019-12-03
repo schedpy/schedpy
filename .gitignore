@@ -1,0 +1,7 @@
+SchedPy API Proposal
+# Virtualenv
+/.venv/
+
+# Regular Python bytecode file
+*.pyc
+__pycache__/
