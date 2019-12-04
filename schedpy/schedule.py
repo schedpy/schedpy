@@ -1,11 +1,13 @@
-import functools
-import time
 from datetime import date
+from functools import partial, update_wrapper
+from time import sleep
 
 from .config import Config
-from .utils import get_active_period_window, get_latest_time_period_window
+from .job import Job
+from .utils import get_active_period_window, get_period_window
 
 config = Config()
+jobs_list = []
 
 
 def set_configs(start_day=0, start_date=date.today()):
@@ -15,7 +17,6 @@ def set_configs(start_day=0, start_date=date.today()):
 
 def first(active_interval=1):
     active_period = ActivePeriod(active_interval, "FIRST")
-    config.get_configs()
     return active_period
 
 
@@ -61,6 +62,11 @@ class RecurringPeriod(object):
         self.recurring_duration = None
 
     @property
+    def days(self):
+        self.recurring_duration = "DAYS"
+        return self
+
+    @property
     def weeks(self):
         self.recurring_duration = "WEEKS"
         return self
@@ -73,7 +79,7 @@ class RecurringPeriod(object):
     def every(self, interval=1):
         today_date = date.today()
         start_day, start_date = config.get_configs()
-        window_start_date, window_end_date = get_latest_time_period_window(
+        window_start_date, window_end_date = get_period_window(
             start_date, self.recurring_duration, self.recurring_interval, today_date, start_day
         )
         active_start_date, active_end_date = get_active_period_window(
@@ -95,7 +101,6 @@ class ActiveTime(object):
         self.active_end_date = active_end_date
         self.interval = interval
         self.active_time = None
-        self.jobs = []
 
     @property
     def seconds(self):
@@ -117,16 +122,12 @@ class ActiveTime(object):
         self.active_time = "DAYS"
         return self
 
-    def do(self, job, times=-1, *args, **kwargs):
-        self.job = functools.partial(job, *args, **kwargs)
-        try:
-            functools.update_wrapper(self.job, job)
-        except AttributeError:
-            pass
-        self.jobs.append(self)
-        return self, self.jobs
-        # if self.active_time is "SECONDS":
-        #     while True:
-        #         if self.active_start_date <= date.today() <= self.active_end_date:
-        #             print("Hey there! the scheduler is on.")
-        #             time.sleep(self.interval)
+    def do(self, job_func, *args, **kwargs):
+        if self.active_time is "MINUTES":
+            self.interval = self.interval * 60
+        if self.active_time is "HOURS":
+            self.interval = self.interval * 3600
+        while True:
+            if self.active_start_date <= date.today() <= self.active_end_date:
+                job_func()
+                sleep(self.interval)
