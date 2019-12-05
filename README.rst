@@ -1,6 +1,9 @@
 SchedPy
 =======
 
+.. image:: https://badge.fury.io/py/schedpy.svg
+    :target: https://badge.fury.io/py/schedpy
+
 .. image:: https://img.shields.io/badge/Gitter-Join_chat-brightgreen.svg
     :target: https://gitter.im/schedpy/community
 
