@@ -127,6 +127,8 @@ class ActiveTime(object):
             self.interval = self.interval * 60
         if self.active_time is "HOURS":
             self.interval = self.interval * 3600
+        if self.active_time is "DAYS":
+            self.interval = self.interval * 86400
         while True:
             if self.active_start_date <= date.today() <= self.active_end_date:
                 job_func()
