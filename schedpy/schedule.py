@@ -123,11 +123,11 @@ class ActiveTime(object):
         return self
 
     def do(self, job_func, *args, **kwargs):
-        if self.active_time is "MINUTES":
+        if self.active_time == "MINUTES":
             self.interval = self.interval * 60
-        if self.active_time is "HOURS":
+        if self.active_time == "HOURS":
             self.interval = self.interval * 3600
-        if self.active_time is "DAYS":
+        if self.active_time == "DAYS":
             self.interval = self.interval * 86400
         while True:
             if self.active_start_date <= date.today() <= self.active_end_date:
